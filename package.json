@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "A type wrapper for firebase/firestore 9 web sdk.",
   "types": "./index.d.ts",
+  "repository": "https://github.com/JMPSequeira/firestore-typed",
   "keywords": [
     "firestore",
     "firebase",
