@@ -56,20 +56,20 @@ Firestore Typed is a type wrapper for [firebase 9 web sdk]([/guides/content/edit
 - But now you'll enjoy based solely on the collection path:
   - Autocomplete for paths:
     
-    ![Path Autocomplete](https://github.com/JMPSequeira/firestore-typed/tree/master/images)
+    ![Path Autocomplete](https://github.com/JMPSequeira/firestore-typed/blob/master/images/autocomplete-filters.png?raw=true)
 
   - Autocomplete filters for property type:
   
-    ![Filter Autocomplete](https://github.com/JMPSequeira/firestore-typed/tree/master/images)
+    ![Filter Autocomplete](https://github.com/JMPSequeira/firestore-typed/blob/master/images/autocomplete-filters.png?raw=true)
 
   - Checks for the above:
     
-    ![Checking Paths](https://github.com/JMPSequeira/firestore-typed/tree/master/images)
+    ![Checking Paths](https://github.com/JMPSequeira/firestore-typed/blob/master/images/invalid-path.png?raw=true)
     
-    ![Checking Filter](https://github.com/JMPSequeira/firestore-typed/tree/master/images)
+    ![Checking Filter](https://github.com/JMPSequeira/firestore-typed/blob/master/images/invalid-filter.png?raw=true)
   
   - Type checking for property values
     
-    ![Checking Value](https://github.com/JMPSequeira/firestore-typed/tree/master/images)
+    ![Checking Value](https://github.com/JMPSequeira/firestore-typed/blob/master/images/invalid-value.png?raw=true)
 
 
