@@ -1,0 +1,21 @@
+{
+  "name": "firestore-typed",
+  "version": "0.1.0",
+  "description": "A type wrapper for firebase/firestore 9 web sdk.",
+  "types": "./index.d.ts",
+  "keywords": [
+    "firestore",
+    "firebase",
+    "types",
+    "typed",
+    "wrapper"
+  ],
+  "author": "JPSoft",
+  "files": [
+    "index.d.ts"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "firebase": "^9.0.0"
+  }
+}
