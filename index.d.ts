@@ -1,47 +1,37 @@
 
 import * as Firestore from "@firebase/firestore";
 
-declare module "@firebase/firestore" {
-    //@ts-ignore
+declare module "firebase/firestore" {
+
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    export interface QueryConstraint<T extends Doc> extends Firestore.QueryConstraint {
+    export interface QueryConstraint<T extends Firestore.DocumentData> extends Firestore.QueryConstraint {
 
     }
-    //@ts-ignore 
-    export const where: <T extends Doc, P extends FilterProps<T>, F extends FiltersOf<UnNestType<T, P>>>(
+
+    export const where: <T extends Firestore.DocumentData, P extends FilterProps<T>, F extends FiltersOf<UnNestType<T, P>>>(
         fieldPath: P
         , opStr: F
-        , value: PropFilterValues<F, UnNestType<T, P>>) => Firestore.QueryConstraint<T>;
+        , value: PropFilterValues<F, UnNestType<T, P>>) => QueryConstraint<T>;
 
-    //@ts-ignore
-    export const orderBy: <T extends Doc, P extends FilterProps<T>>(
+
+    export const orderBy: <T extends Firestore.DocumentData, P extends FilterProps<T>>(
         fieldPath: P
-        , directionStr?: Firestore.OrderByDirection) => Firestore.QueryConstraint<T>;
+        , directionStr?: Firestore.OrderByDirection) => QueryConstraint<T>;
+
+    function collectionT<P extends string, T = CollectionTypeFromPath<CollectionPath<P>>>(firestore: Firestore.Firestore, path: P): Firestore.CollectionReference<T>;
+    function collectionT<T extends Firestore.DocumentData>(firestore: Firestore.Firestore, path: string, ...pathSegments: string[]): Firestore.CollectionReference<T>;
 
     //@ts-ignore
-    export const collection: (<P extends string, T = CollectionTypeFromPath<CollectionPath<P>>>(
-        firestore: Firestore.Firestore
-        , path: P) => Firestore.CollectionReference<T>)
-        | (<P extends string, T = Doc>(
-            firestore: Firestore.Firestore
-            , path: P
-            , ...pathSegments: P[]) => Firestore.CollectionReference<T>);
+    export const collection = collectionT;
 
     //@ts-ignore
     export const doc: (<P extends string, T = CollectionTypeFromPath<CollectionPath<P>>>(
         firestore: Firestore.Firestore
-        , path: P) => Firestore.DocumentReference<T>)
-        | (<P extends string, T = Doc>(
-            firestore: Firestore.Firestore
-            , path: P
-            , ...pathSegments: P[]) => Firestore.DocumentReference<T>);
+        , path: P) => Firestore.DocumentReference<T>);
 
     //@ts-ignore
-    export const query: <T extends Doc>(query: Firestore.Query<T>, ...queryConstraints: QueryConstraint<NoInfer<T>>[]) => Firestore.Query<T>;
+    export const query: <T extends Firestore.DocumentData>(query: Firestore.Query<T>, ...queryConstraints: QueryConstraint<NoInfer<T>>[]) => Firestore.Query<T>;
 }
-
-
-type FirestorePaths = _;
 
 type NoInfer<T> = T extends infer S ? S : never;
 
@@ -56,7 +46,7 @@ type DeepKeysNoArrays<T> =
 
 type DeepSubKeysNoArrays<T, K extends string> = K extends keyof T ? `${K}.${DeepKeysNoArrays<T[K]>}` : never;
 
-type FilterProps<T extends Doc> = DeepKeysNoArrays<T>;
+type FilterProps<T extends Firestore.DocumentData> = DeepKeysNoArrays<T>;
 type EqualityFilters = "==" | "!=";
 type RangeFilters = "<" | "<=" | ">=" | ">";
 type ArrayFilters = "array-contains" | "array-contains-any";
@@ -118,5 +108,5 @@ type Path<T extends string, M extends Mode = 'collection'> =
     ? (M extends "collection" ? `${L}${Path<R, Switch<M>>}` : `/${Path<R, Switch<M>>}`)
     : (M extends "document" ? "" : T)
     ;
-
-type CollectionTypeFromPath<T> = T extends keyof FirestorePaths ? FirestorePaths[T] : unknown;
+//@ts-ignore
+type CollectionTypeFromPath<T> = T extends keyof FirestorePaths ? FirestorePaths[T] : Firestore.DocumentData;
