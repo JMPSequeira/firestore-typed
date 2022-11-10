@@ -1,11 +1,13 @@
 
 import * as Firestore from "@firebase/firestore";
 
+//@ts-ignore
+interface QueryConstraint<T>
+    //@ts-ignore
+    extends Firestore.QueryConstraint {
+}
 declare module "firebase/firestore" {
 
-    export interface QueryConstraint<T extends UnresolvedDocument>
-        extends Firestore.QueryConstraint {
-    }
 
     type ParentDoc<P extends string> =
         Split<P, "/"> extends infer V
@@ -19,13 +21,13 @@ declare module "firebase/firestore" {
         : never
         ;
 
-    export interface MappedCollectionReference<T extends UnresolvedDocument, P extends string>
+    interface MappedCollectionReference<T, P extends string>
         extends Firestore.CollectionReference<T> {
         parent: ParentDoc<P>
     }
 
 
-    export interface MappedDocumentReference<T extends UnresolvedDocument, P extends string>
+    interface MappedDocumentReference<T, P extends string>
         extends Firestore.DocumentReference<T> {
         parent: MappedCollectionReference<T, P>
     }
@@ -90,7 +92,7 @@ declare module "firebase/firestore" {
             T = UnresolvedDocument
         >
         (
-            reference: Firestore.DocumentReference<unknown>
+            reference: Firestore.CollectionReference<unknown>
             , path: string
             , ...pathSegments: string[]
         )
@@ -110,7 +112,7 @@ declare module "firebase/firestore" {
 
     function strictCollection
         <
-            O extends UnresolvedDocument
+            O
             , P1 extends string
             , P2 extends string
             , A extends string[]
@@ -126,7 +128,7 @@ declare module "firebase/firestore" {
 
     function strictCollection
         <
-            O extends UnresolvedDocument
+            O
             , P1 extends string
             , P2 extends string
             , A extends string[]
@@ -156,7 +158,7 @@ declare module "firebase/firestore" {
 
     function strictDocument
         <
-            O extends UnresolvedDocument
+            O
             , P1 extends string
             , P2 extends string
             , A extends string[]
@@ -172,7 +174,7 @@ declare module "firebase/firestore" {
 
     function strictDocument
         <
-            O extends UnresolvedDocument
+            O
             , P1 extends string
             , P2 extends string
             , A extends string[]
@@ -192,21 +194,25 @@ declare module "firebase/firestore" {
     //@ts-ignore
     type Doc = Equals<FirestorePaths, any> extends false ? typeof strictDocument : typeof typedDocument;
 
-    export const doc: Doc;
-    export const collection: Collection;
+    //@ts-ignore
+    let doc: Doc;
 
-    export const where: <T extends UnresolvedDocument, P extends FilterProps<T>, F extends FiltersOf<UnNestType<T, P>>>(
+    //@ts-ignore
+    let collection: Collection;
+
+    //@ts-ignore
+    const where: <T extends object, P extends FilterProps<T>, F extends FiltersOf<UnNestType<T, P>>>(
         fieldPath: P
         , opStr: F
         , value: PropFilterValues<F, UnNestType<T, P>>) => QueryConstraint<T>;
 
-
-    export const orderBy: <T extends UnresolvedDocument, P extends FilterProps<T>>(
+    //@ts-ignore
+    const orderBy: <T, P extends FilterProps<T>>(
         fieldPath: P
         , directionStr?: Firestore.OrderByDirection) => QueryConstraint<T>;
 
     //@ts-ignore
-    export const query: <T extends UnresolvedDocument>(query: Firestore.Query<T>, ...queryConstraints: QueryConstraint<NoInfer<T>>[]) => Firestore.Query<T>;
+    const query: <T>(query: Firestore.Query<T>, ...queryConstraints: QueryConstraint<NoInfer<T>>[]) => Firestore.Query<T>;
 }
 
 type Split<T extends string, S extends string> =
@@ -266,7 +272,7 @@ type DeepKeysNoArrays<T> =
 
 type DeepSubKeysNoArrays<T, K extends string> = K extends keyof T ? `${K}.${DeepKeysNoArrays<T[K]>}` : never;
 
-type FilterProps<T extends Firestore.DocumentData> = DeepKeysNoArrays<T>;
+type FilterProps<T> = DeepKeysNoArrays<T>;
 
 type EqualityFilters = "==" | "!=";
 
