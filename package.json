@@ -1,6 +1,6 @@
 {
   "name": "firestore-typed",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "A type wrapper for firebase/firestore 9 web sdk.",
   "types": "./index.d.ts",
   "repository": "https://github.com/JMPSequeira/firestore-typed",
@@ -16,7 +16,7 @@
     "index.d.ts"
   ],
   "license": "MIT",
-  "dependencies": {
+  "peerDependencies": {
     "firebase": "^9.13.0"
   }
 }
