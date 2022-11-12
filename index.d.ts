@@ -21,6 +21,16 @@ declare module "firebase/firestore" {
         : never
         ;
 
+    type MappedCollection<PS extends string[]> =
+        CollectionTypeFromSegments<PS> extends infer R
+        ? (
+            R extends Error
+            ? R
+            : MappedCollectionReference<R, Path<StrConcat<PS, "/">>>
+        )
+        : never
+        ;
+
     interface MappedCollectionReference<T, P extends string>
         extends Firestore.CollectionReference<T> {
         parent: ParentDoc<P>
@@ -34,7 +44,7 @@ declare module "firebase/firestore" {
 
     function typedCollection
         <
-            T = UnresolvedDocument
+            T = AnyDocument
         >
         (
             firestore: Firestore.Firestore
@@ -45,7 +55,7 @@ declare module "firebase/firestore" {
 
     function typedCollection
         <
-            T = UnresolvedDocument
+            T = AnyDocument
         >
         (
             reference: Firestore.CollectionReference<unknown>
@@ -56,7 +66,7 @@ declare module "firebase/firestore" {
 
     function typedCollection
         <
-            T = UnresolvedDocument
+            T = AnyDocument
         >
         (
             reference: Firestore.DocumentReference<unknown>
@@ -67,7 +77,7 @@ declare module "firebase/firestore" {
 
     function typedDocument
         <
-            T = UnresolvedDocument
+            T = AnyDocument
         >
         (
             firestore: Firestore.Firestore
@@ -78,7 +88,7 @@ declare module "firebase/firestore" {
 
     function typedDocument
         <
-            T = UnresolvedDocument
+            T = AnyDocument
         >
         (
             reference: Firestore.DocumentReference<unknown>
@@ -89,7 +99,7 @@ declare module "firebase/firestore" {
 
     function typedDocument
         <
-            T = UnresolvedDocument
+            T = AnyDocument
         >
         (
             reference: Firestore.CollectionReference<unknown>
@@ -102,14 +112,13 @@ declare module "firebase/firestore" {
         <
             P extends string
             , A extends string[]
-            , T = CollectionTypeFromSegments<[P, ...A]>
         >(
             firestore: Firestore.Firestore
             , path: P
             , ...pathSegments: A
         )
-        : MappedCollectionReference<T, Path<StrConcat<[P, ...A], "/">>>;
-
+        : MappedCollection<[P, ...A]>;
+    type D = Path<StrConcat<["a", "cityCenters"], "/">, "document">;
     function strictCollection
         <
             O
@@ -124,7 +133,7 @@ declare module "firebase/firestore" {
             , path: P2
             , ...pathSegments: A
         )
-        : MappedCollectionReference<R, Path<StrConcat<PS, "/">>>;
+        : MappedCollection<PS>;
 
     function strictCollection
         <
@@ -140,7 +149,7 @@ declare module "firebase/firestore" {
             , path: P2
             , ...pathSegments: A
         )
-        : MappedCollectionReference<R, Path<StrConcat<PS, "/">>>;
+        : MappedCollection<PS>;
 
 
 
@@ -195,10 +204,10 @@ declare module "firebase/firestore" {
     type Doc = Equals<FirestorePaths, any> extends false ? typeof strictDocument : typeof typedDocument;
 
     //@ts-ignore
-    let doc: Doc;
+    const doc: Doc;
 
     //@ts-ignore
-    let collection: Collection;
+    const collection: Collection;
 
     //@ts-ignore
     const where: <T extends object, P extends FilterProps<T>, F extends FiltersOf<UnNestType<T, P>>>(
@@ -255,11 +264,11 @@ type StrConcat<T extends string[] | string, S extends string> =
 //@ts-ignore
 type FirestoreKeys = unknown extends FirestorePaths ? string : keyof FirestorePaths;
 
-type UnresolvedDocument = Firestore.DocumentData;
+type AnyDocument = Firestore.DocumentData;
 
-type FirestoreType<P> = string extends P ? UnresolvedDocument :
+type FirestoreType<P> = string extends P ? AnyDocument :
     //@ts-ignore
-    P extends FirestoreKeys ? FirestorePaths[P] : UnresolvedDocument;
+    P extends FirestoreKeys ? FirestorePaths[P] : AnyDocument;
 
 type NoInfer<T> = T extends infer S ? S : never;
 
@@ -343,7 +352,7 @@ type IfEqual<T, U, R = true, E = false> =
 
 type Path<T extends string, M extends Mode = 'collection'> =
     (T extends `${infer L}/${infer R}`
-        ? (M extends "collection" ? `${L}${Path<R, Switch<M>>}` : `/${Path<R, Switch<M>>}`)
+        ? (M extends "collection" ? `${L}${Path<R, Switch<M>> extends infer R ? R extends "" ? R : `/${R & string}` : never}` : `${Path<R, Switch<M>>}`)
         : (M extends "document" ? "" : T))
     ;
 

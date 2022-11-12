@@ -1,35 +1,65 @@
-# Firestore Typed
+# StrongStore 
+(formerly *firestore-typed*)
 
+&nbsp;
 ## What it is?
-Firestore Typed is a type wrapper for [firebase 9 web sdk]([/guides/content/editing-an-existing-page](https://www.npmjs.com/package/firebase)), specifically targeting the firestore module. It allows for type checking filters and more based on a simple configuration.
+
+StrongStore is a type wrapper for [firebase 9 web sdk]([/guides/content/editing-an-existing-page](https://www.npmjs.com/package/firebase)), specifically targeting the firestore module redeclaring the necessary functions in order to provide a typed 
+firestore. 
+
+It allows for autocomplete and type checking based on a simple configuration.
 
 &nbsp;
 ## Installation Guide
+______________
+&nbsp;
 - Install the firebase package dependency:
     ```
     $ npm install firebase@9
     ```
-- Install the firestore-typed package:
+- Install the strongstore package:
     ```
-    $ npm install -D firestore-typed
+    $ npm install -D strongstore
     ```
 
+&nbsp;
 ## Configuration
-- Import firestore-typed into a declaration (d.ts) or regular ts file:
+__________
+&nbsp;
+
+StrongStore redeclares functions in 'firebase/firestore' so if you have --skipLibCheck false it will throw a redeclaration error for each of one of those functions. 
+
+&nbsp;
+- Import it into a declaration (d.ts) file:
     ```ts
-    import "firestore-typed";
+    import "strongstore";
+    ```
+
+&nbsp;
+### Modes
+&nbsp;
+
+StrongStore works in two mutually exclusive ways: Strict or Typed.
+
+&nbsp;
+#### Typed Mode
+&nbsp;
+- Simply use firebase as you'd normally do:
+    ```ts
+    import { collection, getDocs, getFirestore, orderBy, query, where } from 'firebase/firestore';
     ```
 - Import your document models:
     ```ts
     /* 
         interface City { name:string; mayor: Person; } 
-        interface Person { name:string; } <- a nested object
+        interface Person { name:string; nicknames: string[]; } <- a nested object
     */
+    
     import { City } from './models/city';
-
-    /* interface CityCenters { name:string;  code: number; } */
-    import { CityCenters } from './models/city'; 
     ```
+- Enjoy the range the features provided: 
+    <img src="./images/typed-mode.png" alt="drawing" width="1000"/>
+    
 - Declare you firestore paths 
     ```ts
     declare global {
@@ -40,36 +70,25 @@ Firestore Typed is a type wrapper for [firebase 9 web sdk]([/guides/content/edit
     }
     ```
 ## Usage
-- Simply use firebase as you'd normally do:
-    ```ts
-    import { collection, getDocs, getFirestore, orderBy, query, where } from 'firebase/firestore';
 
-    const getCities = async () =>
-        getDocs(
-            query(
-                collection(getFirestore(), "cities")
-                , where("mayor", "==", {name: "Barack Obama"})
-                , orderBy("mayor.name")
-            ));
-    ```
     
 - But now you'll enjoy based solely on the collection path:
   - Autocomplete for paths:
     
-    ![Path Autocomplete](https://github.com/JMPSequeira/firestore-typed/blob/master/images/autocomplete-filters.png?raw=true)
+    ![Path Autocomplete](https://github.com/JMPSequeira/strongstore/blob/master/images/autocomplete-filters.png?raw=true)
 
   - Autocomplete filters for property type:
   
-    ![Filter Autocomplete](https://github.com/JMPSequeira/firestore-typed/blob/master/images/autocomplete-filters.png?raw=true)
+    ![Filter Autocomplete](https://github.com/JMPSequeira/strongstore/blob/master/images/autocomplete-filters.png?raw=true)
 
   - Checks for the above:
     
-    ![Checking Paths](https://github.com/JMPSequeira/firestore-typed/blob/master/images/invalid-path.png?raw=true)
+    ![Checking Paths](https://github.com/JMPSequeira/strongstore/blob/master/images/invalid-path.png?raw=true)
     
-    ![Checking Filter](https://github.com/JMPSequeira/firestore-typed/blob/master/images/invalid-filter.png?raw=true)
+    ![Checking Filter](https://github.com/JMPSequeira/strongstore/blob/master/images/invalid-filter.png?raw=true)
   
   - Type checking for property values
     
-    ![Checking Value](https://github.com/JMPSequeira/firestore-typed/blob/master/images/invalid-value.png?raw=true)
+    ![Checking Value](https://github.com/JMPSequeira/strongstore/blob/master/images/invalid-value.png?raw=true)
 
 

@@ -1,13 +1,14 @@
 {
-  "name": "firestore-typed",
+  "name": "strongstore",
   "version": "0.1.4",
   "description": "A type wrapper for firebase/firestore 9 web sdk.",
   "types": "./index.d.ts",
-  "repository": "https://github.com/JMPSequeira/firestore-typed",
+  "repository": "https://github.com/JMPSequeira/strongstore",
   "keywords": [
     "firestore",
     "firebase",
     "types",
+    "typings",
     "typed",
     "wrapper"
   ],
