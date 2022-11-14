@@ -1,6 +1,6 @@
 {
   "name": "strongstore",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A type wrapper for firebase/firestore 9 web sdk.",
   "types": "./index.d.ts",
   "repository": "https://github.com/JMPSequeira/strongstore",

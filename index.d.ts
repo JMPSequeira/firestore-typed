@@ -12,7 +12,7 @@ declare module "firebase/firestore" {
         ? (V extends [string]
             ? null
             : (V extends string[]
-                ? MappedDocumentReference<TypeFromPath<StrConcat<Pop<V>, "/">>, StrConcat<Pop<V>, "/">>
+                ? MappedDocument<TypeFromPath<StrConcat<Pop<V>, "/">>, StrConcat<Pop<V>, "/">>
                 : never
             )
         )
@@ -23,20 +23,20 @@ declare module "firebase/firestore" {
         SegmentsFromParts<PS, M> extends infer R
         ? R extends Error ? R
         : TypeFromPath<R> extends T
-        ? M extends "collection" ? MappedCollectionReference<T, StrConcat<ContractPath<PS>, "/">>
-        : MappedDocumentReference<T, StrConcat<ContractPath<PS>, "/">>
+        ? M extends "collection" ? MappedCollection<T, StrConcat<ContractPath<PS>, "/">>
+        : MappedDocument<T, StrConcat<ContractPath<PS>, "/">>
         : never
         : never
 
         ;
 
-    interface MappedCollectionReference<T, P extends string>
+    interface MappedCollection<T, P extends string>
         extends Firestore.CollectionReference<T> {
         parent: ParentDoc<P>
     }
-    interface MappedDocumentReference<T, P extends string>
+    interface MappedDocument<T, P extends string>
         extends Firestore.DocumentReference<T> {
-        parent: MappedCollectionReference<T, P>
+        parent: MappedCollection<T, P>
     }
 
     function typedCollection
@@ -126,7 +126,7 @@ declare module "firebase/firestore" {
             , PS extends MergeSegments<P1, "collection", [P2, ...A], "collection">
         >
         (
-            reference: MappedCollectionReference<O, P1>
+            reference: MappedCollection<O, P1>
             , path: P2
             , ...pathSegments: A
         )
@@ -143,7 +143,7 @@ declare module "firebase/firestore" {
             , PS extends MergeSegments<P1, "document", [P2, ...A], "collection">
         >
         (
-            reference: MappedDocumentReference<O, P1>
+            reference: MappedDocument<O, P1>
             , path: P2
             , ...pathSegments: A
         )
@@ -159,7 +159,7 @@ declare module "firebase/firestore" {
             , PS extends MergeSegments<P1, "collection", [P2, ...A], "document">
         >
         (
-            reference: MappedCollectionReference<O, P1>
+            reference: MappedCollection<O, P1>
             , path: P2
             , ...pathSegments: A
         )
@@ -175,7 +175,7 @@ declare module "firebase/firestore" {
             , PS extends MergeSegments<P1, "document", [P2, ...A], "document">
         >
         (
-            reference: MappedDocumentReference<O, P1>
+            reference: MappedDocument<O, P1>
             , path: P2
             , ...pathSegments: A
         )
