@@ -20,10 +20,12 @@ declare module "firebase/firestore" {
         ;
 
     type Mapped<PS extends string[], M extends PathType> =
-        TypeFromSegments2<PS> extends infer R
+        SegmentsFromParts<PS, M> extends infer R
         ? R extends Error ? R
-        : M extends "collection" ? MappedCollectionReference<R, StrConcat<ContractPath<PS>, "/">>
-        : MappedDocumentReference<R, StrConcat<ContractPath<PS>, "/">>
+        : TypeFromPath<R> extends T
+        ? M extends "collection" ? MappedCollectionReference<T, StrConcat<ContractPath<PS>, "/">>
+        : MappedDocumentReference<T, StrConcat<ContractPath<PS>, "/">>
+        : never
         : never
 
         ;
@@ -148,20 +150,6 @@ declare module "firebase/firestore" {
 
         //@ts-ignore
         : Mapped<PS, "collection">;
-
-
-
-    function strictDocument
-        <
-            P extends string
-            , A extends string[]
-        >(
-            firestore: Firestore.Firestore
-            , path: P
-            , ...pathSegments: A
-        )
-        : Mapped<PreparePath<[P, ...A]>, "document">;
-
     function strictDocument
         <
             O
@@ -193,6 +181,20 @@ declare module "firebase/firestore" {
         )
         //@ts-ignore
         : Mapped<PS, "document">
+
+
+    function strictDocument
+        <
+            P extends string
+            , A extends string[]
+        >(
+            firestore: Firestore.Firestore
+            , path: P
+            , ...pathSegments: A
+        )
+        : Mapped<PreparePath<[P, ...A]>, "document">;
+
+
 
     //@ts-ignore
     type Collection = Equals<FirestoreConfig, any> extends false ? typeof strictCollection : typeof typedCollection;
@@ -399,22 +401,6 @@ type SegmentsFromParts<S extends string[], M extends PathType> =
     : never
     : never
     // : never
-    ;
-
-type T0 = SegmentsFromParts<["cities", "NY" | "LA"], "document">;
-declare global {
-    type FirestoreConfig = {
-        "cities": number
-    }
-}
-
-type TypeFromSegments2<S extends unknown[]> =
-    StrConcat<ContractPath<S>, "/"> extends infer K
-    ? K extends FirestoreKeys
-    //@ts-ignore
-    ? FirestoreConfig[K]
-    : Invalid<`Can not find '${K & string}' in the provided paths`>
-    : never
     ;
 
 type And<L, R> = L extends true ? R extends true ? true : false : false;
