@@ -26,7 +26,7 @@ ______________
 __________
 &nbsp;
 
-StrongStore redeclares functions in 'firebase/firestore' so if you compile with '--skipLibCheck false' it will throw a redeclaration error for each of one of those functions. 
+StrongStore redeclares functions in 'firebase/firestore' so if you compile with '--skipLibCheck false' it will throw a redeclare error for each of one of those functions. 
 
 &nbsp;
 - Import StrongStore into a declaration (d.ts) file (I personally call it data.d.ts):
@@ -94,8 +94,15 @@ Strict Mode is ...strict. Only configured collections will work.
 
   //      ↓ MappedCollection<City, "cities">
   const citiesCollection = collection(firestore,"cities");
+
   //      ↓ MappedDocument<City, "cities">
   const nyDoc = doc(firestore,"cities/NY");
+
+  //      ↓ MappedCollection<City, "cities">
+  const citiesCollection = nyDoc.parent;
+
+  //      ↓ null
+  const nullParent = citiesCollection.parent;
   ``` 
 - Besides the explicit path, you can use:
   ```ts
@@ -119,7 +126,7 @@ Strict Mode is ...strict. Only configured collections will work.
   //      is the same as
   const nyAttractions = collection(firestore,`${citiesPath}/NY/attractions`);
   ```
-- For document segments, as long as it's resolvable to a compile time constant, or it does not resolve to `${string | any | never | unknown}` (Unions are accepted as long as they follow the same pattern):
+  - For document segments, as long as it's resolvable to a compile time constant, or it does not resolve to `(string | any | never | unknown)` (Unions are accepted as long as they follow the same pattern):
   ```ts
   function getNyCityAttractions(id: number) : Promise<QuerySnapshot<Attraction>> {
     
