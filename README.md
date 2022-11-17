@@ -26,7 +26,7 @@ ______________
 __________
 &nbsp;
 
-StrongStore redeclares functions in 'firebase/firestore' so if you compile with '--skipLibCheck false' it will throw a redeclare error for each of one of those functions. 
+StrongStore redeclares functions in 'firebase/firestore' so if you compile with '--skipLibCheck false' it will throw a redeclare error for each one of those functions. 
 
 &nbsp;
 - Import StrongStore into a declaration (d.ts) file (I personally call it data.d.ts):
