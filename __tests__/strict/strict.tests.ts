@@ -1,19 +1,16 @@
-import { collection, doc, getFirestore, Mapped, MappedCollection, MappedDocument, orderBy, query, where } from "firebase/firestore";
-import { MergeSegments, PreparePath, QueryConstraint } from '../..';
-
-
+import { collection, doc, MappedCollection, MappedDocument } from "firebase/firestore";
 
 
 const aValidCollectionWithSegments: MappedCollection<City, "cities"> = collection(firestore, "cities");
 const aValidCollectionWithCompileConstant: MappedCollection<City, "cities"> = collection(firestore, citiesPath);
-const aValidCollectionWithTralingSlash: MappedCollection<City, "cities"> = collection(firestore, "cities/");
+const aValidCollectionWithTrailingSlash: MappedCollection<City, "cities"> = collection(firestore, "cities/");
 const aValidCollectionWithLeadingSlash: MappedCollection<City, "cities"> = collection(firestore, "/cities");
 const aValidCollectionWithLeadingAndTrailingSlash: MappedCollection<City, "cities"> = collection(firestore, "/cities/");
 const aValidDocWithSegments: MappedDocument<City, "cities"> = doc(firestore, "cities", "anId");
 const aValidDocWithCompileConstant: MappedDocument<City, "cities"> = doc(firestore, citiesPath, "anId");
 const aValidDocWithCompileConstantAndDocUnion: MappedDocument<City, "cities"> = doc(firestore, citiesPath, docUnion);
 const aValidDocWithComposedPath: MappedDocument<City, "cities"> = doc(firestore, "cities/anId");
-const aValidDocWithTralingSlash: MappedDocument<City, "cities"> = doc(firestore, "cities/", "anId/");
+const aValidDocWithTrailingSlash: MappedDocument<City, "cities"> = doc(firestore, "cities/", "anId/");
 const aValidDocWithLeadingSlash: MappedDocument<City, "cities"> = doc(firestore, "/cities", "/anId");
 const aValidDocWithLeadingAndTrailingSlash: MappedDocument<City, "cities"> = doc(firestore, "/cities/", "/anId/");
 const aValidDocWithCollectionAsStartingPoint: MappedDocument<City, "cities"> = doc(citiesRef, "anId");
@@ -23,7 +20,7 @@ const aValidDocWithNestedCollectionAsStartingPoint: MappedDocument<NestedCity, "
 const aValidNestedCollectionWithSegments: MappedCollection<NestedCity, "cities/nested"> = collection(firestore, "cities", "anId", "nested");
 const aValidNestedCollectionWithCompileConstant: MappedCollection<NestedCity, "cities/nested"> = collection(firestore, citiesPath, "anId", nestedPath);
 const aValidNestedCollectionWithComposedPath: MappedCollection<NestedCity, "cities/nested"> = collection(firestore, "cities/anId/nested");
-const aValidNestedCollectionWithTralingSlash: MappedCollection<NestedCity, "cities/nested"> = collection(firestore, "cities/", "anId/", "nested/");
+const aValidNestedCollectionWithTrailingSlash: MappedCollection<NestedCity, "cities/nested"> = collection(firestore, "cities/", "anId/", "nested/");
 const aValidNestedCollectionWithLeadingSlash: MappedCollection<NestedCity, "cities/nested"> = collection(firestore, "/cities", "/anId", "/nested");
 const aValidNestedCollectionWithLeadingAndTrailingSlash: MappedCollection<NestedCity, "cities/nested"> = collection(firestore, "/cities/", "/anId/", "/nested/");
 const aValidNestedCollectionWithDocUnion: MappedCollection<NestedCity, "cities/nested"> = collection(firestore, "/cities/", docUnion, "/nested/");

@@ -1,17 +1,17 @@
-import { Firestore, MappedCollection, MappedDocument } from 'firebase/firestore';
+import { Mapped, MappedCollection, MappedDocument, Firestore } from "firebase/firestore";
 import "../../index";
 
 
 declare global {
-    declare const citiesPath = "cities";
-    declare const nestedPath = "nested";
-    declare const docUnion: "one" | "two";
-    declare const docPlaceN: number;
-    declare const citiesRef: MappedCollection<City, "cities"> = null!;
-    declare const nestedRef: MappedCollection<NestedCity, "cities/nested">;
-    declare const docRef: MappedDocumentReference<City, "cities">;
+    const citiesPath = "cities";
+    const nestedPath = "nested";
+    const docUnion: "one" | "two";
+    const docPlaceN: number;
+    const citiesRef: MappedCollection<City, "cities">;
+    const nestedRef: MappedCollection<NestedCity, "cities/nested">;
+    const docRef: MappedDocument<City, "cities">;
 
-    declare const firestore: Firestore;
+    const firestore: Firestore;
 
     type FirestoreConfig = {
         cities: City,

@@ -6,7 +6,6 @@ interface QueryConstraint<T> extends Firestore.QueryConstraint {
 }
 declare module "firebase/firestore" {
 
-
     type ParentDoc<P extends string> =
         Split<P, "/"> extends infer V
         ? (V extends [string]
@@ -22,13 +21,15 @@ declare module "firebase/firestore" {
     type Mapped<PS extends string[], M extends PathType> =
         SegmentsFromParts<PS, M> extends infer R
         ? R extends Error ? R
-        : TypeFromPath<R> extends T
-        ? M extends "collection" ? MappedCollection<T, StrConcat<ContractPath<PS>, "/">>
-        : MappedDocument<T, StrConcat<ContractPath<PS>, "/">>
+        : (
+            TypeFromPath<CleanPath<PS>> extends infer T
+            ? M extends "collection" ? MappedCollection<T, CleanPath<PS>>
+            : MappedDocument<T, CleanPath<PS>>
+            : never
+        )
         : never
-        : never
-
         ;
+
 
     interface MappedCollection<T, P extends string>
         extends Firestore.CollectionReference<T> {
@@ -37,6 +38,10 @@ declare module "firebase/firestore" {
     interface MappedDocument<T, P extends string>
         extends Firestore.DocumentReference<T> {
         parent: MappedCollection<T, P>
+    }
+
+    interface MappedPath<P extends string, M extends PathType> {
+        parent: unknown;
     }
 
     function typedCollection
@@ -119,14 +124,13 @@ declare module "firebase/firestore" {
 
     function strictCollection
         <
-            O
-            , P1 extends string
+            P1 extends string
             , P2 extends string
             , A extends string[]
             , PS extends MergeSegments<P1, "collection", [P2, ...A], "collection">
         >
         (
-            reference: MappedCollection<O, P1>
+            reference: MappedCollection<unknown, P1>
             , path: P2
             , ...pathSegments: A
         )
@@ -136,52 +140,18 @@ declare module "firebase/firestore" {
 
     function strictCollection
         <
-            O
-            , P1 extends string
+            P1 extends string
             , P2 extends string
             , A extends string[]
             , PS extends MergeSegments<P1, "document", [P2, ...A], "collection">
         >
         (
-            reference: MappedDocument<O, P1>
+            reference: MappedDocument<unknown, P1>
             , path: P2
             , ...pathSegments: A
         )
-
         //@ts-ignore
         : Mapped<PS, "collection">;
-    function strictDocument
-        <
-            O
-            , P1 extends string
-            , P2 extends string
-            , A extends string[]
-            , PS extends MergeSegments<P1, "collection", [P2, ...A], "document">
-        >
-        (
-            reference: MappedCollection<O, P1>
-            , path: P2
-            , ...pathSegments: A
-        )
-        //@ts-ignore
-        : Mapped<PS, "document">
-
-    function strictDocument
-        <
-            O
-            , P1 extends string
-            , P2 extends string
-            , A extends string[]
-            , PS extends MergeSegments<P1, "document", [P2, ...A], "document">
-        >
-        (
-            reference: MappedDocument<O, P1>
-            , path: P2
-            , ...pathSegments: A
-        )
-        //@ts-ignore
-        : Mapped<PS, "document">
-
 
     function strictDocument
         <
@@ -192,9 +162,37 @@ declare module "firebase/firestore" {
             , path: P
             , ...pathSegments: A
         )
+        //@ts-ignore
         : Mapped<PreparePath<[P, ...A]>, "document">;
+    function strictDocument
+        <
+            P1 extends string
+            , P2 extends string
+            , A extends string[]
+            , PS extends MergeSegments<P1, "collection", [P2, ...A], "document">
+        >
+        (
+            reference: MappedCollection<unknown, P1>
+            , path: P2
+            , ...pathSegments: A
+        )
+        //@ts-ignore
+        : Mapped<PS, "document">
 
+    function strictDocument
+        <
+            P1 extends string
+            , P2 extends string
+            , A extends string[]
 
+        >
+        (
+            reference: MappedDocument<unknown, P1>
+            , path: P2
+            , ...pathSegments: A
+        )
+        //@ts-ignore
+        : Mapped<MergeSegments<P1, "document", [P2, ...A], "document">, "document">
 
     //@ts-ignore
     type Collection = Equals<FirestoreConfig, any> extends false ? typeof strictCollection : typeof typedCollection;
@@ -222,6 +220,26 @@ declare module "firebase/firestore" {
     //@ts-ignore
     const query: <T>(query: Firestore.Query<T>, ...queryConstraints: QueryConstraint<NoInfer<T>>[]) => Firestore.Query<T>;
 }
+
+type CleanPath<T extends string[]> = StrConcat<ContractPath<T>, "/">
+//@ts-ignore
+type TypeFromPath<T extends string> = T extends FirestoreKeys ? FirestoreConfig[T] : never;
+
+type SegmentsFromParts<S extends string[], M extends PathType> =
+    NoDoubleSlash<S> extends infer MaybeError ? MaybeError extends Error ? MaybeError
+    : NoInvalidPlaceholders<S> extends infer MaybeError ? MaybeError extends Error ? MaybeError
+    : PreparePath<S> extends infer Segments
+    // ? Segments 
+    //@ts-ignore
+    ? NoMoreThan100Parts<Segments> extends infer MaybeError ? MaybeError extends Error ? MaybeError
+    //@ts-ignore
+    : NoIncorrectLength<Segments, M>
+    : never
+    : never
+    : never
+    : never
+    // : never
+    ;
 type MergeSegments<P1 extends string, M1 extends PathType, P2 extends string[], M2 extends PathType> =
     SegmentsFromParts<[...ExpandPath<Split<P1, "/">, M1>, ...P2], M2>;
 
@@ -338,8 +356,7 @@ type Path<T extends string, M extends PathType = 'collection'> =
     ;
 
 
-//@ts-ignore
-type TypeFromPath<T extends string> = T extends FirestoreKeys ? FirestoreConfig[T] : never;
+
 
 type NoIncorrectLength<S extends string[], M extends PathType> =
     Even<S['length']> extends true
@@ -387,21 +404,7 @@ type HasInvalidPlaceholder<S extends string> =
         , Or<Equals<S, `${any}`>
             //@ts-ignore
             , Equals<S, `${unknown}`>>>;
-type SegmentsFromParts<S extends string[], M extends PathType> =
-    NoDoubleSlash<S> extends infer MaybeError ? MaybeError extends Error ? MaybeError
-    : NoInvalidPlaceholders<S> extends infer MaybeError ? MaybeError extends Error ? MaybeError
-    : PreparePath<S> extends infer Segments
-    // ? Segments 
-    //@ts-ignore
-    ? NoMoreThan100Parts<Segments> extends infer MaybeError ? MaybeError extends Error ? MaybeError
-    //@ts-ignore
-    : NoIncorrectLength<Segments, M>
-    : never
-    : never
-    : never
-    : never
-    // : never
-    ;
+
 
 type And<L, R> = L extends true ? R extends true ? true : false : false;
 
