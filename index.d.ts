@@ -27,7 +27,7 @@ declare module "firebase/firestore" {
             : MappedDocument<T, CleanPath<PS>>
             : never
         )
-        : never
+        : "never"
         ;
 
 
@@ -38,10 +38,6 @@ declare module "firebase/firestore" {
     interface MappedDocument<T, P extends string>
         extends Firestore.DocumentReference<T> {
         parent: MappedCollection<T, P>
-    }
-
-    interface MappedPath<P extends string, M extends PathType> {
-        parent: unknown;
     }
 
     function typedCollection
@@ -119,7 +115,7 @@ declare module "firebase/firestore" {
             , path: P
             , ...pathSegments: A
         )
-        : Mapped<PreparePath<[P, ...A]>, "collection">;
+        : Mapped<[P, ...A], "collection">;
 
 
     function strictCollection
@@ -163,7 +159,7 @@ declare module "firebase/firestore" {
             , ...pathSegments: A
         )
         //@ts-ignore
-        : Mapped<PreparePath<[P, ...A]>, "document">;
+        : Mapped<[P, ...A], "document">;
     function strictDocument
         <
             P1 extends string
@@ -221,7 +217,7 @@ declare module "firebase/firestore" {
     const query: <T>(query: Firestore.Query<T>, ...queryConstraints: QueryConstraint<NoInfer<T>>[]) => Firestore.Query<T>;
 }
 
-type CleanPath<T extends string[]> = StrConcat<ContractPath<T>, "/">
+type CleanPath<T extends string[]> = StrConcat<ContractPath<PreparePath<T>>, "/">
 //@ts-ignore
 type TypeFromPath<T extends string> = T extends FirestoreKeys ? FirestoreConfig[T] : never;
 

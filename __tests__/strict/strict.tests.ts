@@ -1,6 +1,6 @@
 import { collection, doc, MappedCollection, MappedDocument } from "firebase/firestore";
 
-
+// resolve 
 const aValidCollectionWithSegments: MappedCollection<City, "cities"> = collection(firestore, "cities");
 const aValidCollectionWithCompileConstant: MappedCollection<City, "cities"> = collection(firestore, citiesPath);
 const aValidCollectionWithTrailingSlash: MappedCollection<City, "cities"> = collection(firestore, "cities/");
@@ -27,11 +27,23 @@ const aValidNestedCollectionWithDocUnion: MappedCollection<NestedCity, "cities/n
 const aValidNestedCollectionWithCollectionAsStartingSegment: MappedCollection<NestedCity, "cities/nested"> = collection(citiesRef, "anId", "nested");
 const aValidNestedCollectionWithDocAsStartingSegment: MappedCollection<NestedCity, "cities/nested"> = collection(docRef, "nested");
 
+
+
+//navigation
 const nullParent: null = citiesRef.parent;
 const cityParent: MappedCollection<City, "cities"> = docRef.parent;
 const cityDocParent: MappedDocument<City, "cities"> = nestedRef.parent;
 
 
+//errors
+//@ts-expect-error
+const doubleSlash: MappedCollection<City, "cities"> = collection(firestore, "/cities//");
+
+//@ts-expect-error
+const incorrectLengthCollection: MappedCollection<City, "cities"> = collection(firestore, "/cities/a");
+
+//@ts-expect-error
+const incorrectLengthDocument: MappedDocument<City, "cities"> = doc(firestore, "/cities/");
 
 
 
