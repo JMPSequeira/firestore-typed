@@ -38,12 +38,20 @@ const cityDocParent: MappedDocument<City, "cities"> = nestedRef.parent;
 //errors
 //@ts-expect-error
 const doubleSlash: MappedCollection<City, "cities"> = collection(firestore, "/cities//");
-
 //@ts-expect-error
 const incorrectLengthCollection: MappedCollection<City, "cities"> = collection(firestore, "/cities/a");
-
 //@ts-expect-error
 const incorrectLengthDocument: MappedDocument<City, "cities"> = doc(firestore, "/cities/");
+//@ts-expect-error
+const invalidPath: MappedCollection<City, "cities"> = collection(firestore, "citiesa");
+//@ts-expect-noerror
+const validStringIfDocumentPart: MappedDocument<City, "cities"> = doc(firestore, "cities", aString);
+//@ts-expect-noerror
+const validStringIfDocumentPartMultiple: MappedDocument<NestedCity, "cities"> = doc(firestore, "cities", aString, "nested", aString);
+//@ts-expect-error
+const invalidStringIfCollectionPart: MappedDocument<NestedCity, "cities"> = doc(firestore, "cities", aString, aString, "irrelevant");
+
+
 
 
 

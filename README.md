@@ -126,9 +126,10 @@ Strict Mode is ...strict. Only configured collections will work.
   //      is the same as
   const nyAttractions = collection(firestore,`${citiesPath}/NY/attractions`);
   ```
-  - For document segments, as long as it's resolvable to a compile time constant, or it does not resolve to `(string | any | never | unknown)` (Unions are accepted as long as they follow the same pattern):
+  - For document segments:
   ```ts
-  function getNyCityAttractions(id: number) : Promise<QuerySnapshot<Attraction>> {
+  // BE CAREFUL NOT TO PASS A SLASH
+  function getNyCityAttractions(id: string) : Promise<QuerySnapshot<Attraction>> {
     
     //      ↓ MappedCollection<Attraction, "cities/attractions
     const nyAttractions = collection(firestore,"cities", id, "attractions");

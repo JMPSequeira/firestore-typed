@@ -10,6 +10,7 @@ declare global {
     const citiesRef: MappedCollection<City, "cities">;
     const nestedRef: MappedCollection<NestedCity, "cities/nested">;
     const docRef: MappedDocument<City, "cities">;
+    const aString: string;
 
     const firestore: Firestore;
 

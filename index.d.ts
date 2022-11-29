@@ -23,11 +23,13 @@ declare module "firebase/firestore" {
         ? R extends Error ? R
         : (
             TypeFromPath<CleanPath<PS>> extends infer T
-            ? M extends "collection" ? MappedCollection<T, CleanPath<PS>>
+            ? T extends Error
+            ? T
+            : M extends "collection" ? MappedCollection<T, CleanPath<PS>>
             : MappedDocument<T, CleanPath<PS>>
             : never
         )
-        : "never"
+        : never
         ;
 
 
@@ -219,13 +221,12 @@ declare module "firebase/firestore" {
 
 type CleanPath<T extends string[]> = StrConcat<ContractPath<PreparePath<T>>, "/">
 //@ts-ignore
-type TypeFromPath<T extends string> = T extends FirestoreKeys ? FirestoreConfig[T] : never;
+type TypeFromPath<T extends string> = T extends FirestoreKeys ? FirestoreConfig[T] : Invalid<`Could not find FirestoreConfig key '${T}' `>;
 
 type SegmentsFromParts<S extends string[], M extends PathType> =
     NoDoubleSlash<S> extends infer MaybeError ? MaybeError extends Error ? MaybeError
     : NoInvalidPlaceholders<S> extends infer MaybeError ? MaybeError extends Error ? MaybeError
     : PreparePath<S> extends infer Segments
-    // ? Segments 
     //@ts-ignore
     ? NoMoreThan100Parts<Segments> extends infer MaybeError ? MaybeError extends Error ? MaybeError
     //@ts-ignore
@@ -372,8 +373,11 @@ type NoDoubleSlash<S extends string[], N extends number = 0> = N extends S['leng
     S[N] extends (`${any}//${any}` | `//${any}` | `${any}//`) ? Invalid<`Segment at index ${N} contains invalid '//'`> : NoDoubleSlash<S, Inc<N>>;
 
 type NoInvalidPlaceholders<S extends string[], N extends number = 0> =
-    N extends S['length'] ? S :
-    HasInvalidPlaceholder<S[N]> extends true
+    N extends S['length']
+    ? S
+    : Odd<N> extends true
+    ? NoInvalidPlaceholders<S, Inc<N>>
+    : HasInvalidPlaceholder<S[N]> extends true
     ? Invalid<`Segment at index ${N} has an invalid placeholder (string | any | unknown)`>
     : NoInvalidPlaceholders<S, Inc<N>>
     ;
